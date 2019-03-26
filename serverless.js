@@ -9,7 +9,7 @@ const defaults = {
   name: 'serverless',
   description: 'Serverless Layer',
   code: process.cwd(),
-  runtimes: ['nodejs8.10'],
+  runtimes: undefined,
   prefix: undefined,
   include: [],
   bucket: undefined,
@@ -40,16 +40,19 @@ class AwsLambdaLayer extends Component {
 
     const prevLayer = await getLayer(lambda, config.arn)
 
+    // if the user removed the bucket property, they'd want to redeploy
+    // so prevLayer need to be aware of the bucket since it's not returned from aws
     if (this.state.bucket) {
       prevLayer.bucket = this.state.bucket
     }
 
     if (configChanged(prevLayer, config)) {
-      this.cli.status('Uploading')
-      if (config.bucket) {
+      if (config.bucket && (!prevLayer || prevLayer.hash !== config.hash)) {
+        this.cli.status('Uploading')
         const bucket = await this.load('@serverless/aws-s3')
         await bucket.upload({ name: config.bucket, file: config.zipPath })
       }
+      this.cli.status('Publishing')
       config.arn = await publishLayer({ lambda, ...config })
     }
 
