@@ -20,9 +20,9 @@ AwsLambdaLayer@0.1.2::my-layer:
   runtimes: [ 'nodejs8.10' ] # the default is undefined (aka. all runtimes supported)
   
   # a path prefix to all the files that would be included in the package
-  # for example, add a nodejs/node_modules prefix to package a valid node dependency
+  # this example would package a valid node dependency
   # since this is the path expected by aws
-  prefix: undefined
+  prefix: nodejs/node_modules
   
   # if you'd like to include any files outside the codebase
   include:
