@@ -9,7 +9,7 @@ A serverless component that provisions a Lambda layer.
 
 ```yml
 
-name: my-aws-lambda
+name: my-aws-layer
 stage: dev
 
 AwsLambdaLayer@0.1.2::my-layer:
