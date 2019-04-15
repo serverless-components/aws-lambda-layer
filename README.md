@@ -44,7 +44,7 @@ in the case of a nodejs layer, the directory should look something like this:
 name: my-layer
 stage: dev
 
-myFunction:
+myLayer:
   component: "@serverless/aws-lambda-layer"
   inputs:
     name: my-layer
@@ -72,7 +72,7 @@ myFunction:
 ```console
 AwsLambdaLayer (master)$ components
 
-  myFunction › outputs:
+  myLayer › outputs:
   name:  'my-layer'
   description:  'My Serverless Layer'
   arn:  'arn:aws:lambda:us-east-1:552760238299:layer:my-layer:1'
