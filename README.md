@@ -1,4 +1,4 @@
-# AWS Lambda Layer
+# aws-lambda-layer
 
 Easily provision Layers for AWS Lambda using [Serverless Components](https://github.com/serverless/components).
 
@@ -92,7 +92,7 @@ AwsLambdaLayer (master)$ components
 AwsLambdaLayer (master)$
 
 ```
-For a real world example of how this component could be used, [take a look at how the AwsLambda component is using it](https://github.com/serverless-components/AwsLambda/blob/master/serverless.js#L64-L77).
+For a real world example of how this component could be used, [take a look at how the aws-lambda component is using it](https://github.com/serverless-components/aws-lambda/blob/master/serverless.js#L64-L77).
 
 &nbsp;
 
