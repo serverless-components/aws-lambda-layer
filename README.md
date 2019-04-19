@@ -79,7 +79,7 @@ myLayer:
 ### 4. Deploy
 
 ```console
-AwsLambdaLayer (master)$ components
+layer (master)$ components
 
   myLayer › outputs:
   name:  'my-layer'
@@ -89,7 +89,7 @@ AwsLambdaLayer (master)$ components
 
   29s › dev › my-layer › done
 
-AwsLambdaLayer (master)$
+layer (master)$
 
 ```
 For a real world example of how this component could be used, [take a look at how the aws-lambda component is using it](https://github.com/serverless-components/aws-lambda/blob/master/serverless.js#L64-L77).
