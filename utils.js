@@ -3,17 +3,17 @@ const { tmpdir } = require('os')
 const crypto = require('crypto')
 const { readFile } = require('fs-extra')
 const { equals, not, pick } = require('ramda')
-const { isArchivePath, packDir, fileExists } = require('@serverless/components')
+const { utils } = require('@serverless/components')
 
 const pack = async (code, prefix, include = []) => {
-  if (isArchivePath(code)) {
+  if (utils.isArchivePath(code)) {
     return path.resolve(code)
   }
   const pkgJsonPath = path.resolve(path.join(code, '..', 'package.json'))
 
   let outputFilePath
 
-  if (await fileExists(pkgJsonPath)) {
+  if (await utils.fileExists(pkgJsonPath)) {
     const pkgJsonHash = crypto
       .createHash('sha256')
       .update(await readFile(pkgJsonPath))
@@ -28,10 +28,10 @@ const pack = async (code, prefix, include = []) => {
     outputFilePath = path.join(tmpdir(), `${random}.zip`)
   }
 
-  if (await fileExists(outputFilePath)) {
+  if (await utils.fileExists(outputFilePath)) {
     return outputFilePath
   }
-  return packDir(code, outputFilePath, include, [], prefix)
+  return utils.packDir(code, outputFilePath, include, [], prefix)
 }
 
 const publishLayer = async ({ lambda, name, description, runtimes, zipPath, bucket }) => {
