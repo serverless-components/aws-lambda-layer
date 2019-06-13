@@ -3,7 +3,7 @@ const { tmpdir } = require('os')
 const crypto = require('crypto')
 const { readFile } = require('fs-extra')
 const { equals, not, pick } = require('ramda')
-const { utils } = require('@serverless/components')
+const { utils } = require('@serverless/core')
 
 const pack = async (code, prefix, include = []) => {
   if (utils.isArchivePath(code)) {

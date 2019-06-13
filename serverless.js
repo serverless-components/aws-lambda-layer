@@ -1,5 +1,5 @@
 const aws = require('aws-sdk')
-const { Component, utils } = require('@serverless/components')
+const { Component, utils } = require('@serverless/core')
 const { mergeDeepRight, pick } = require('ramda')
 const { pack, publishLayer, deleteLayer, getLayer, configChanged } = require('./utils')
 
@@ -26,14 +26,14 @@ class AwsLambdaLayer extends Component {
     })
 
     if (this.state.name && this.state.name !== config.name) {
-      this.ui.status('Replacing')
+      this.context.status('Replacing')
       await deleteLayer(lambda, this.state.arn)
       delete this.state.arn
     }
 
     config.arn = this.state.arn
 
-    this.ui.status('Packaging')
+    this.context.status('Packaging')
 
     config.zipPath = await pack(config.code, config.prefix, config.include)
     config.hash = await utils.hashFile(config.zipPath)
@@ -48,11 +48,11 @@ class AwsLambdaLayer extends Component {
 
     if (configChanged(prevLayer, config)) {
       if (config.bucket && (!prevLayer || prevLayer.hash !== config.hash)) {
-        this.ui.status('Uploading')
+        this.context.status('Uploading')
         const bucket = await this.load('@serverless/aws-s3')
         await bucket.upload({ name: config.bucket, file: config.zipPath })
       }
-      this.ui.status('Publishing')
+      this.context.status('Publishing')
       config.arn = await publishLayer({ lambda, ...config })
     }
 
@@ -64,10 +64,10 @@ class AwsLambdaLayer extends Component {
 
     const outputs = pick(outputMask, config)
 
-    this.ui.log()
-    this.ui.output('name', `       ${outputs.name}`)
-    this.ui.output('description', `${outputs.description}`)
-    this.ui.output('arn', `        ${outputs.arn}`)
+    this.context.log()
+    this.context.output('name', `       ${outputs.name}`)
+    this.context.output('description', `${outputs.description}`)
+    this.context.output('arn', `        ${outputs.arn}`)
 
     return outputs
   }
@@ -77,7 +77,7 @@ class AwsLambdaLayer extends Component {
     if (!inputs.arn && !this.state.arn) {
       return
     }
-    this.ui.status('Removing')
+    this.context.status('Removing')
 
     const lambda = new aws.Lambda({
       region: inputs.region || defaults.region,
