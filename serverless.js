@@ -75,6 +75,9 @@ class AwsLambdaLayer extends Component {
   // todo remove all versions?
   async remove(inputs = {}) {
     if (!inputs.arn && !this.state.arn) {
+      this.state = {}
+
+      await this.save()
       return
     }
     this.context.status('Removing')
