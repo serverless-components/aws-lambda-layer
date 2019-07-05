@@ -75,8 +75,8 @@ class AwsLambdaLayer extends Component {
 
     this.state.name = config.name
     this.state.arn = config.arn
+    this.state.region = config.region
     this.state.bucket = config.bucket || undefined
-
     await this.save()
 
     const outputs = pick(outputsList, config)
