@@ -15,7 +15,7 @@ Easily provision Layers for AWS Lambda using [Serverless Components](https://git
 ### 1. Install
 
 ```console
-$ npm install -g @serverless/components
+$ npm install -g serverless
 ```
 
 ### 2. Create
@@ -33,13 +33,11 @@ in the case of a nodejs layer, the directory should look something like this:
   |- index.js     # the root of your library
   |- package.json # the main property should point to index.js in this example
 |- serverless.yml
-|- .env           # your development AWS api keys
-|- .env.prod      # your production AWS api keys
+|- .env           # your AWS api keys
 ```
 
-the `.env` files are not required if you have the aws keys set globally and you want to use a single stage, but they should look like this.
-
 ```
+# .env
 AWS_ACCESS_KEY_ID=XXX
 AWS_SECRET_ACCESS_KEY=XXX
 ```
@@ -50,17 +48,12 @@ AWS_SECRET_ACCESS_KEY=XXX
 ```yml
 # serverless.yml
 
-name: my-layer
-stage: dev
-
 myLayer:
   component: "@serverless/aws-lambda-layer"
   inputs:
-    name: my-layer
-    description: My Serverless Layer
     code: ./code
     regoin: us-east-1
-    runtimes: [ 'nodejs8.10' ] # the default is undefined (aka. all runtimes supported)
+    runtimes: [ 'nodejs8.10' ] # the default is undefined (all runtimes supported)
 
     # a path prefix to all the files that would be included in the package
     # this example would package a valid node dependency
@@ -79,20 +72,9 @@ myLayer:
 ### 4. Deploy
 
 ```console
-layer (master)$ components
-
-  myLayer › outputs:
-  name:  'my-layer'
-  description:  'My Serverless Layer'
-  arn:  'arn:aws:lambda:us-east-1:552760238299:layer:my-layer:1'
-
-
-  29s › dev › my-layer › done
-
-layer (master)$
-
+$ serverless
 ```
-For a real world example of how this component could be used, [take a look at how the aws-lambda component is using it](https://github.com/serverless-components/aws-lambda/blob/master/serverless.js#L64-L77).
+For a real world example of how this component could be used, [take a look at how the aws-lambda component is using it](https://github.com/serverless-components/aws-lambda/).
 
 &nbsp;
 
