@@ -52,7 +52,7 @@ myLayer:
   component: "@serverless/aws-lambda-layer"
   inputs:
     code: ./code
-    regoin: us-east-1
+    region: us-east-1
     runtimes: [ 'nodejs8.10' ] # the default is undefined (all runtimes supported)
 
     # a path prefix to all the files that would be included in the package
