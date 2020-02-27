@@ -60,7 +60,7 @@ class AwsLambdaLayer extends Component {
         this.context.debug(`Uploading layer package ${config.zipPath} to ${config.bucket}.`)
 
         const bucket = await this.load('@serverless/aws-s3')
-        await bucket.upload({ name: config.bucket, file: config.zipPath })
+        await bucket.upload({ name: config.bucket, region: config.region, file: config.zipPath })
       }
       this.context.status('Publishing')
       this.context.debug(`Publishing layer ${config.name} to the ${config.region} region.`)
