@@ -7,8 +7,8 @@
 <br/>
 
 - [x] **Zero Configuration** - All we need is your code, then just deploy.
-- [x] **Fast Deployments** - Deploy & publish your layers in seconds.
-- [x] **Team Collaboration** - Collaborate with your teamates with shared state and outputs.
+- [x] **Fast Deployments** - Watch for code changes and deploy in seconds.
+- [x] **Team Collaboration** - Simply share layer arn and other outputs with your team.
 - [x] **Easy Management** - Easily manage your layers with the Serverless Dashboard
 
 <br/>
