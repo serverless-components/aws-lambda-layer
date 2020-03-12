@@ -89,8 +89,8 @@ The `aws-lambda-layer` component is a zero configuration component, meaning that
 Here's a complete reference of the `serverless.yml` file for the `aws-lambda-layer` component:
 
 ```yml
-component: aws-lambda-layer      # (required) name of the component. In that case, it's express.
-name: my-layer                   # (required) name of your express component instance.
+component: aws-lambda-layer      # (required) name of the component. In that case, it's aws-lambda-layer.
+name: my-layer                   # (required) name of your aws-lambda-layer component instance.
 org: serverlessinc               # (optional) serverless dashboard org. default is the first org you created during signup.
 app: myApp                       # (optional) serverless dashboard app. default is the same as the name property.
 stage: dev                       # (optional) serverless dashboard stage. default is dev.
