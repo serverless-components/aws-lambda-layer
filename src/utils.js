@@ -1,56 +1,130 @@
+const { readFileSync } = require('fs')
 const AWS = require('aws-sdk')
-const path = require('path')
-const shortid = require('shortid')
-const { readFileSync, readdirSync, removeSync } = require('fs-extra')
+const https = require('https')
+const agent = new https.Agent({
+  keepAlive: true
+})
 
 const sleep = async (wait) => new Promise((resolve) => setTimeout(() => resolve(), wait))
 
-/**
- * Create Layer Bucket
+/*
+ * Initializes an AWS SDK and returns the relavent service clients
+ *
+ * @param ${object} credentials - aws credentials object
+ * @param ${string} region - aws region
  */
-const createLayerBucket = async(credentials, region) => {
-  const s3 = new AWS.S3({ credentials, region })
-  const Bucket = 'layer-code-' + Math.random().toString(36).substring(7) // TODO: Not long enough.  Collision risk.
-  const params = {
-    Bucket,
-    ACL: 'private',
-  }
-  await s3.createBucket(params).promise()
-  return Bucket
-}
+const getClients = (credentials, region = 'us-east-1') => {
+  AWS.config.update({
+    httpOptions: {
+      agent
+    }
+  })
 
-const publishLayer = async (credentials, region, zipPath, layerName, bucketName, runtimes = []) => {
-  const s3 = new AWS.S3({ credentials, region })
   const lambda = new AWS.Lambda({ credentials, region })
 
-  const keyName = `layer-${Date.now()}`
-
-  var params = { 
-    Bucket: bucketName, 
-    Key: keyName, 
-    Body: readFileSync(zipPath)
+  return {
+    lambda
   }
-  var options = { partSize: 10 * 1024 * 1024, queueSize: 1 }
-  const upload = await s3.upload(params, options).promise()
+}
 
+/*
+ * Publishes a new layer version
+ *
+ * @param ${instance} instance - the component instance
+ * @param ${object} inputs - the component inputs
+ * @param ${object} clients - the aws clients object
+ */
+const deployLayer = async (instance, inputs, clients) => {
   const layerParams = {
     Content: {
-      S3Bucket: bucketName,
-      S3Key: upload.Key,
+      ZipFile: readFileSync(inputs.src)
     },
-    LayerName: layerName, /* required */
-    CompatibleRuntimes: runtimes
+    LayerName: instance.name,
+    CompatibleRuntimes: inputs.runtimes || []
   }
-  const res = await lambda.publishLayerVersion(layerParams).promise()
 
-  // Clean up the zip
-  removeSync(zipPath)
+  // eslint-disable-next-line
+  console.log(`Publishing Layer "${instance.name}" to the "${inputs.region}" region`)
 
-  return res
+  const res = await clients.lambda.publishLayerVersion(layerParams).promise()
+
+  instance.state.arn = res.LayerArn
+  instance.state.versionArn = res.LayerVersionArn
+  instance.state.version = res.Version
+  instance.state.name = instance.name
+  instance.state.region = inputs.region
+
+  // eslint-disable-next-line
+  console.log(
+    `Layer "${instance.name}" version "${instance.state.version}" was successfully published to the "${inputs.region}" region`
+  )
+
+  return res.LayerVersionArn
+}
+
+/*
+ * Removes the specified layer version
+ *
+ * @param ${instance} instance - the component instance
+ * @param ${object} clients - the aws clients object
+ * @param ${number} layerVersion - the layer version number to remove
+ */
+const removeLayerVersion = async (instance, clients, layerVersion) => {
+  const deleteLayerVersionParams = {
+    LayerName: instance.name,
+    VersionNumber: layerVersion
+  }
+
+  // eslint-disable-next-line
+  console.log(`Removing Layer "${instance.name}" version "${layerVersion}"`)
+
+  await clients.lambda.deleteLayerVersion(deleteLayerVersionParams).promise()
+}
+
+/*
+ * Removes layer and all its versions from aws
+ *
+ * @param ${instance} instance - the component instance
+ * @param ${object} clients - the aws clients object
+ */
+const removeLayer = async (instance, clients) => {
+  try {
+    const listLayerVersionsParams = {
+      LayerName: instance.name
+    }
+
+    // eslint-disable-next-line
+    console.log(`Listing Layer "${instance.name}" versions`)
+
+    const listLayersVersionsRes = await clients.lambda
+      .listLayerVersions(listLayerVersionsParams)
+      .promise()
+
+    const layerVersions = listLayersVersionsRes.LayerVersions.map(
+      (layerVersion) => layerVersion.Version
+    )
+
+    const promises = []
+
+    // eslint-disable-next-line
+    for (const layerVersion of layerVersions) {
+      promises.push(removeLayerVersion(instance, clients, layerVersion))
+    }
+
+    await Promise.all(promises)
+
+    // eslint-disable-next-line
+    console.log(`Layer "${instance.name}" was successfully removed`)
+  } catch (e) {
+    if (e.code !== 'ResourceNotFoundException') {
+      throw e
+    }
+  }
 }
 
 module.exports = {
-  createLayerBucket,
-  publishLayer,
-  sleep,
+  deployLayer,
+  removeLayer,
+  getClients,
+  sleep
 }

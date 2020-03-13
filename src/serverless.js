@@ -1,44 +1,33 @@
 const { Component } = require('@serverless/core')
-const { publishLayer, createLayerBucket } = require('./utils')
+const { getClients, deployLayer, removeLayer } = require('./utils')
 
 class AwsLambdaLayer extends Component {
   async deploy(inputs = {}) {
-
     inputs.region = inputs.region || 'us-east-1'
-    inputs.name = inputs.name || 'layer-component'
-    inputs.runtimes = inputs.runtimes || []
+    const clients = getClients(this.credentials.aws, inputs.region)
 
-    // Detect bucket
-    if (!this.state.bucketName) {
-      console.log('Creating a layer bucket')
-      const bucket = await createLayerBucket(this.credentials.aws, inputs.region)
-      console.log('Created: ', bucket)
-      this.state.bucketName = bucket
-    }
-
-    this.state.region = inputs.region || this.state.region || 'us-east-1'
-    this.state.name = inputs.name || this.state.name || 'layer-component-' + Math.random().toString(36).substring(7)
-
-    const res = await publishLayer(this.credentials.aws, inputs.region, inputs.src, this.state.name, this.state.bucketName, inputs.runtimes)
-    
-    this.state.arn = res.LayerArn
-    this.state.arnVersion = res.LayerVersionArn
+    await deployLayer(this, inputs, clients)
 
     return {
       name: this.state.name,
       region: this.state.region,
+      version: this.state.version,
       arn: this.state.arn,
-      arnVersion: this.state.arnVersion,
-      bucketName: this.state.bucketName,
+      arnVersion: this.state.versionArn
     }
   }
 
   async remove() {
-    return {}
-  }
+    if (!this.state.name) {
+      // eslint-disable-next-line
+      console.log(`State is empty. Nothing to remove.`)
+    }
+    const clients = getClients(this.credentials.aws, this.state.region)
 
-  extract() {
-    return false
+    await removeLayer(this, clients)
+
+    this.state = {}
+    return {}
   }
 }
 
