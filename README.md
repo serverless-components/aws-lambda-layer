@@ -90,14 +90,13 @@ Here's a complete reference of the `serverless.yml` file for the `aws-lambda-lay
 
 ```yml
 component: aws-lambda-layer      # (required) name of the component. In that case, it's aws-lambda-layer.
-name: my-layer                   # (required) name of your aws-lambda-layer component instance.
+name: my-layer                   # (required) name of your instance/layer.
 org: serverlessinc               # (optional) serverless dashboard org. default is the first org you created during signup.
 app: myApp                       # (optional) serverless dashboard app. default is the same as the name property.
 stage: dev                       # (optional) serverless dashboard stage. default is dev.
 
 inputs:
   src: ./src                     # (required) path to the source folder containing the layer logic.
-  name: my-layer                 # (optional) name of your layer.
   runtimes:                      # (optional) runtimes that are compatible with this layer. default is an empty array.
     - nodejs12.x
   region: us-east-2              # (optional) aws region to deploy to. default is us-east-1.
