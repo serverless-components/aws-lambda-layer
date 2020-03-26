@@ -13,7 +13,7 @@ const instanceYaml = {
   stage: 'dev',
   inputs: {
     src: path.resolve(__dirname, 'src')
-  } // should deploy with zero inputs
+  }
 }
 
 // we need to keep the initial instance state after first deployment
