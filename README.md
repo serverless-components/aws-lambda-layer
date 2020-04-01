@@ -2,6 +2,12 @@
 
 <br/>
 
+<p align="center">
+  <b><a href="https://github.com/serverless-components/aws-lambda-layer/tree/v1">Click Here for Version 1.0</a></b>
+</p>
+
+<br/>
+
 **AWS Lambda Layer Component** ⎯⎯⎯ The easiest way to develop & deploy AWS Lambda Layers, powered by [Serverless Components](https://github.com/serverless/components/tree/cloud).
 
 <br/>
