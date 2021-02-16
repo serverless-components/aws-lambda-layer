@@ -54,6 +54,18 @@ const deployLayer = async (instance, inputs, clients) => {
 
   const res = await clients.lambda.publishLayerVersion(layerParams).promise()
 
+  var permissionsParams = {
+    Action: 'lambda:GetLayerVersion',
+    LayerName: instance.name,
+    Principal: '*',
+    StatementId: Math.random()
+      .toString(36)
+      .substring(7),
+    VersionNumber: res.Version
+  }
+
+  await clients.lambda.addLayerVersionPermission(permissionsParams).promise()
+
   instance.state.arn = res.LayerArn
   instance.state.versionArn = res.LayerVersionArn
   instance.state.version = res.Version
